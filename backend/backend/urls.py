@@ -15,8 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
+from api.error_handlers import handler400, handler403, handler404, handler500
+
+# Global error handlers
+handler400 = 'api.error_handlers.handler400'
+handler403 = 'api.error_handlers.handler403'
+handler404 = 'api.error_handlers.handler404'
+handler500 = 'api.error_handlers.handler500'
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
-]
+    
+    # API routes
+    path('api/', include('api.urls')),
+    
+    # Redirect root to API
+    path('', RedirectView.as_view(url='/api/', permanent=False)),
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

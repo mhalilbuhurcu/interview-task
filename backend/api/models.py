@@ -10,17 +10,19 @@ class Influencer(models.Model):
     ]
 
     full_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     phone_number = models.CharField(max_length=20)
-    content_type = models.JSONField()  # Store multiple content types
-    collaboration_history = models.TextField(blank=True)
+    content_types = models.JSONField(default=list)  # Ensure this is a JSONField
+    collaboration_history = models.TextField(blank=True, null=True)
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
         default='pending'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.full_name
 
 class SocialMediaAccount(models.Model):
     PLATFORM_CHOICES = [
@@ -36,5 +38,8 @@ class SocialMediaAccount(models.Model):
     )
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
     username = models.CharField(max_length=100)
-    followers_count = models.IntegerField(default=0)
+    followers_count = models.IntegerField(null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.influencer.full_name} - {self.platform}"
