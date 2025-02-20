@@ -62,11 +62,12 @@ class InfluencerViewSet(viewsets.ModelViewSet):
                     elif platform == 'tiktok':
                         followers_count = self.scraper.get_tiktok_followers(username)
 
-                    # Update the influencer's social account data with followers count
+                    # Update or create the influencer's social account data with followers count
                     SocialMediaAccount.objects.update_or_create(
                         influencer=influencer,
                         platform=platform,
-                        defaults={'username': username, 'followers_count': followers_count}
+                        username=username,  # Ensure username is included for uniqueness
+                        defaults={'followers_count': followers_count}
                     )
 
             return Response({"message": "Influencer created/updated successfully."}, status=status.HTTP_201_CREATED)
@@ -134,10 +135,15 @@ class SocialMediaViewSet(viewsets.ViewSet):
             followers = self.scraper.get_twitter_followers(username)
             
             if followers is not None:
+                influencer_email = request.data.get('email')
+                influencer = get_object_or_404(Influencer, email=influencer_email)
+
                 # Save the followers count to the SocialMediaAccount model
                 SocialMediaAccount.objects.update_or_create(
+                    influencer=influencer,
                     platform='twitter',
-                    defaults={'username': username, 'followers_count': followers}
+                    username=username,  # Ensure username is included for uniqueness
+                    defaults={'followers_count': followers}
                 )
             
             return Response({'followers': followers}, status=status.HTTP_200_OK)
@@ -147,19 +153,19 @@ class SocialMediaViewSet(viewsets.ViewSet):
             return Response({'error': 'An error occurred while fetching followers.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['post'])
-    def login_tiktok(self, request):
+    async def login_tiktok(self, request):
         username = request.data.get('username')
-
+        
         if not username:
             return Response({'error': 'Username is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Fetch the followers count directly
-            followers = self.scraper.get_tiktok_followers(username)
-
+            # Await the followers count fetching
+            followers = await self.scraper.get_tiktok_followers(username)
+            
             if followers is not None:
                 return Response({'followers': followers}, status=status.HTTP_200_OK)
-
+            
             return Response({'error': 'Followers count could not be fetched.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         except Exception as e:

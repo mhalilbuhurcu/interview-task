@@ -37,7 +37,42 @@ class SocialMediaScraper:
             self._log(f"Error fetching Instagram followers: {e}")
         return None
 
-   
+    def get_tiktok_followers(self, username: str) -> Optional[int]:
+        url = f"https://www.tiktok.com/@{username}"
+        options = Options()
+        options.add_argument("--headless")  # Run in headless mode
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+
+        try:
+            driver.get(url)
+            time.sleep(5)  # Wait for JavaScript to load
+
+            # Attempt to find the follower count using the provided XPath
+            follower_count_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="main-content-others_homepage"]/div/div[1]/div[2]/div[3]/h3/div[2]/strong'))
+            )
+            follower_count = follower_count_element.text.strip()
+
+            # Convert follower count to integer
+            if follower_count:
+                if 'M' in follower_count:
+                    return int(float(follower_count.replace('M', '').strip()) * 1_000_000)
+                elif 'K' in follower_count:
+                    return int(float(follower_count.replace('K', '').strip()) * 1_000)
+                else:
+                    return int(follower_count)
+
+        except Exception as e:
+            self._log(f"Error fetching TikTok followers: {e}")
+            return None
+        finally:
+            driver.quit()
 
     def _parse_followers_count(self, soup) -> Optional[int]:
         try:
