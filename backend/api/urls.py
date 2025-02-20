@@ -1,9 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import InfluencerViewSet
+from .views import InfluencerViewSet, SocialMediaViewSet
+
 
 router = DefaultRouter()
 router.register(r'influencers', InfluencerViewSet, basename='influencers')
+router.register(r'social_media', SocialMediaViewSet, basename='social_media')
 
 urlpatterns = [
     # Router URLs

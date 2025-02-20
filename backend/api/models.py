@@ -41,5 +41,8 @@ class SocialMediaAccount(models.Model):
     followers_count = models.IntegerField(null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('platform', 'username')  # Ensure unique combination of platform and username
+
     def __str__(self):
         return f"{self.influencer.full_name} - {self.platform}"

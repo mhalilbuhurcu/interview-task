@@ -1,8 +1,8 @@
 export interface SocialMediaAccount {
     platform: 'instagram' | 'tiktok' | 'twitter';
     username: string;
-    followers_count: number;
-    last_updated: string;
+    followers_count?: number;
+    last_updated?: string;
 }
 
 export interface Influencer {

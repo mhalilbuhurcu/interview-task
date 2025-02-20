@@ -2,6 +2,7 @@ import ApplicationForm from '@/components/ApplicationForm';
 import Head from 'next/head';
 
 
+
 export default function Home() {
     return (
         <>
@@ -17,6 +18,7 @@ export default function Home() {
                         Influencer Application Platform
                     </h1>
                     <ApplicationForm />
+                    
                 </main>
             </div>
         </>
