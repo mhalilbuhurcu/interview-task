@@ -124,7 +124,8 @@ export default function ApplicationForm() {
             },
             body: JSON.stringify({ 
                 ...formData, 
-                social_accounts: updatedSocialAccounts 
+                social_accounts: updatedSocialAccounts,
+                content_types: formData.contentTypes
             }),
         });
 

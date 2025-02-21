@@ -43,7 +43,7 @@ class InfluencerViewSet(viewsets.ModelViewSet):
                     'phone_number': request.data.get('phoneNumber'),
                     'collaboration_history': request.data.get('collaborationHistory'),
                     'status': request.data.get('status', 'pending'),
-                    'content_types': request.data.get('content_types', [])
+                    'content_types': request.data.get('contentTypes', [])
                 }
             )
 
